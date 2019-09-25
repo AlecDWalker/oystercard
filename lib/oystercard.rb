@@ -7,12 +7,13 @@ MINIMUM_FARE = 1
 attr_accessor :balance
 attr_reader :maximum , :active , :entry_station , :history
 
-  def initialize(balance= DEAFAULT_BALANCE)
+  def initialize(balance: DEAFAULT_BALANCE, journey: Journey.new)
     @balance = balance
     @maximum = MAXIMUM_BALANCE
     @active = false
     @entry_station = nil
     @history = []
+    @journey = journey
   end
 
   def in_journey?
@@ -21,6 +22,7 @@ attr_reader :maximum , :active , :entry_station , :history
 
   def touch_in(entry_station)
     fail 'Insufficient funds' if @balance < MINIMUM_FARE
+    @journey.touch_in
     @entry_station = entry_station
   end
 

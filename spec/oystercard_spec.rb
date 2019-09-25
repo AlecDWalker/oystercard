@@ -1,10 +1,11 @@
 require 'oystercard'
 
 describe Oystercard do
-  let(:oystercard) { described_class.new}
   let(:station){double :station}
   let(:entry_station){double :station}
   let(:exit_station){double :station}
+  let(:journey) { double :journey, in_journey?: false }
+  let(:oystercard) { described_class.new(journey: journey)}
   it {is_expected.to respond_to :in_journey?}
 
 
@@ -21,9 +22,10 @@ describe Oystercard do
   describe '#touch_in' do
     it {is_expected.to respond_to :touch_in}
     it 'changes active status to true when it has been touched in' do
-    oystercard.top_up(5)
-    oystercard.touch_in(station)
-    expect(oystercard.in_journey?)
+      expect(journey).to receive(:touch_in) { true }
+      oystercard.top_up(5)
+      oystercard.touch_in(station)
+      # expect(oystercard.in_journey?)
     end
 
     it 'denies entry if balance is less than £1' do
