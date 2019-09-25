@@ -3,6 +3,8 @@ require 'oystercard'
 describe Oystercard do
   let(:oystercard) { described_class.new}
   let(:station){double :station}
+  let(:entry_station){double :station}
+  let(:exit_station){double :station}
   it {is_expected.to respond_to :in_journey?}
 
 
@@ -53,6 +55,12 @@ end
 describe '#history' do
   it 'initializes with an empty array of previous journeys' do
     expect(oystercard.history).to be_empty
+  end
+  it 'populates a journey hash within the history array on touch out' do
+    oystercard.top_up(5)
+    oystercard.touch_in(entry_station)
+    oystercard.touch_out(exit_station)
+    expect(oystercard.history).to eq [{in: entry_station , out: exit_station}]
   end
 end
   describe '#top_up' do

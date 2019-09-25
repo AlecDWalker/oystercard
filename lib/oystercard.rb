@@ -5,14 +5,13 @@ MAXIMUM_BALANCE = 90
 MINIMUM_FARE = 1
 
 attr_accessor :balance
-attr_reader :maximum , :active , :entry_station , :history , :exit_station
+attr_reader :maximum , :active , :entry_station , :history
 
   def initialize(balance= DEAFAULT_BALANCE)
     @balance = balance
     @maximum = MAXIMUM_BALANCE
     @active = false
     @entry_station = nil
-    @exit_station = nil
     @history = []
   end
 
@@ -20,15 +19,15 @@ attr_reader :maximum , :active , :entry_station , :history , :exit_station
   !!entry_station
   end
 
-  def touch_in(station)
+  def touch_in(entry_station)
     fail 'Insufficient funds' if @balance < MINIMUM_FARE
-    @entry_station = station
+    @entry_station = entry_station
   end
 
-  def touch_out(station)
+  def touch_out(exit_station)
     deduct(MINIMUM_FARE)
+    @history << {in: entry_station , out: exit_station}
     @entry_station = nil
-    @exit_ststion = station
   end
 
   def top_up(amount)
