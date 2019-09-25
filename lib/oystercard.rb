@@ -5,28 +5,28 @@ MAXIMUM_BALANCE = 90
 MINIMUM_FARE = 1
 
 attr_accessor :balance
-attr_reader :maximum , :active , :entry_station , :history
+attr_reader :maximum , :entry_station , :history
 
   def initialize(balance: DEAFAULT_BALANCE, journey: Journey.new)
     @balance = balance
     @maximum = MAXIMUM_BALANCE
-    @active = false
     @entry_station = nil
     @history = []
     @journey = journey
   end
 
   def in_journey?
-  !!entry_station
+  @journey.in_journey?
   end
 
   def touch_in(entry_station)
     fail 'Insufficient funds' if @balance < MINIMUM_FARE
-    @journey.touch_in
+    @journey.touch_in(entry_station)
     @entry_station = entry_station
   end
 
   def touch_out(exit_station)
+    @journey.touch_out(exit_station)
     deduct(MINIMUM_FARE)
     @history << {in: entry_station , out: exit_station}
     @entry_station = nil

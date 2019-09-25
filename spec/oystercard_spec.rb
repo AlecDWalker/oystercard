@@ -4,7 +4,7 @@ describe Oystercard do
   let(:station){double :station}
   let(:entry_station){double :station}
   let(:exit_station){double :station}
-  let(:journey) { double :journey, in_journey?: false }
+  let(:journey) { double :journey, in_journey?: false , :touch_in => true , :touch_out => false}
   let(:oystercard) { described_class.new(journey: journey)}
   it {is_expected.to respond_to :in_journey?}
 
@@ -13,19 +13,24 @@ describe Oystercard do
     it 'initializes with a balance of 0 if no value is given by the user' do
     expect(oystercard.balance).to eq 0
     end
-    it 'initializes in an inactive state' do
-      oystercard = Oystercard.new
-      expect(oystercard.active).to be false
-    end
   end
-
+ describe '#in_journey?' do
+   it 'in_journey returns true' do
+     oystercard.top_up(10)
+     oystercard.touch_in(station)
+     expect(journey).to receive(:in_journey?).and_return true
+     expect(oystercard.in_journey?).to eq true
+   end
+   it 'in_journey returns false' do
+     expect(journey).to receive(:in_journey?).and_return false
+     expect(oystercard.in_journey?).to eq false
+   end
+ end
   describe '#touch_in' do
     it {is_expected.to respond_to :touch_in}
     it 'changes active status to true when it has been touched in' do
-      expect(journey).to receive(:touch_in) { true }
       oystercard.top_up(5)
-      oystercard.touch_in(station)
-      # expect(oystercard.in_journey?)
+      expect(oystercard.touch_in(station)).to eq station
     end
 
     it 'denies entry if balance is less than £1' do
@@ -41,11 +46,13 @@ describe Oystercard do
   end
   describe '#touch_out' do
   it {is_expected.to respond_to :touch_out}
+
   it 'changes active status to false when it has been touched out' do
+  expect(journey).to receive(:touch_out).and_return false
   oystercard.top_up(5)
   oystercard.touch_in(station)
   oystercard.touch_out(station)
-  expect(oystercard.active).to be false
+  expect(oystercard.in_journey?).to be false
   end
 
   it 'deducts the minimum fare on touch out' do
