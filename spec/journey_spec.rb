@@ -8,6 +8,13 @@ describe Journey do
         expect(subject.touch_in(station)).to eq true
       end
     end
+      context 'when touched in' do
+      it 'raises error on double touch in' do
+        subject.touch_in(station)
+        expect(subject.in_journey?).to be true
+        expect{subject.touch_in(station)}.to raise_error 'Penalty incurred: touched in twice'
+      end
+    end
   end
 
   describe '#touch_out' do
@@ -17,8 +24,13 @@ describe Journey do
         expect(subject.touch_out(station)).to eq false
       end
     end
+    context 'when touched out' do
+      it 'raises an error when touched out twice' do
+        expect{subject.touch_out(station)}.to raise_error 'Penalty incurred: touched out twice'
+      end
+    end
   end
-  
+
   describe '#in_journey?' do
     context 'when in a journey' do
       it 'returns true' do
@@ -41,10 +53,14 @@ describe Journey do
     end
 
     context 'when penalty incurred' do
-      it 'returns Penalty Fare' do
+      it 'returns Penalty Fare when double touched out' do
+        subject.touch_out(station)
+        expect(subject.fare).to eq Journey::PENALTY_FARE
+      end
+      it 'returns Penalty Fare when double touched in' do
         subject.touch_in(station)
         subject.touch_in(station)
-        expect()
+        expect(subject.fare).to eq Journey::PENALTY_FARE
       end
     end
   end
