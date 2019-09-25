@@ -4,7 +4,13 @@ describe Oystercard do
   let(:station){double :station}
   let(:entry_station){double :station}
   let(:exit_station){double :station}
-  let(:journey) { double :journey, in_journey?: false , :touch_in => true , :touch_out => false}
+  let(:journey) { 
+    double :journey,
+    in_journey?: false,
+    :touch_in => true,
+    :touch_out => false,
+    fare: Journey::MINIMUM_FARE
+  }
   let(:oystercard) { described_class.new(journey: journey)}
   it {is_expected.to respond_to :in_journey?}
 
@@ -55,10 +61,11 @@ describe Oystercard do
   expect(oystercard.in_journey?).to be false
   end
 
-  it 'deducts the minimum fare on touch out' do
+  it 'deducts the fare on touch out' do
   oystercard.top_up(5)
   oystercard.touch_in(station)
-  expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
+  expect(journey).to receive(:fare) { Journey::MINIMUM_FARE }
+  expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Journey::MINIMUM_FARE)
   end
 end
 describe '#history' do

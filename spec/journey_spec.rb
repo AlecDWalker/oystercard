@@ -32,4 +32,20 @@ describe Journey do
       end
     end
   end
+
+  describe '#fare' do
+    context 'on trip completion' do
+      it 'returns the minimum fare' do
+        expect(subject.fare).to eq Journey::MINIMUM_FARE
+      end
+    end
+
+    context 'when penalty incurred' do
+      it 'returns Penalty Fare' do
+        subject.touch_in(station)
+        subject.touch_in(station)
+        expect()
+      end
+    end
+  end
 end
