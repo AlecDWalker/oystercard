@@ -51,6 +51,12 @@ describe Oystercard do
       expect(oystercard.entry_station).to eq station
     end
 
+    it 'charges penalty fare on double touch in' do
+      let(:journey) {double(:journey, entry_station: station, )}
+      subject.touch_in(station)
+
+    end
+
   end
   describe '#touch_out' do
   it {is_expected.to respond_to :touch_out}

@@ -11,27 +11,25 @@ class Oystercard
 
   def initialize(balance: DEAFAULT_BALANCE, journey: Journey.new)
     @balance = balance
-    @entry_station = nil
     @history = []
     @journey = journey
   end
 
-  def in_journey?
-    @journey.in_journey?
-  end
+  def in_journey?; end
 
   def touch_in(entry_station)
+    penalty_charge if journey.already_touched_in?
+
     raise 'Insufficient funds' if insufficient?
 
-    @journey.touch_in(entry_station)
-    @entry_station = entry_station
+    journey.touch_in(entry_station)
   end
 
   def touch_out(exit_station)
-    @journey.touch_out(exit_station)
-    deduct(@journey.fare)
-    @history << { in: entry_station, out: exit_station }
-    @entry_station = nil
+    journey.touch_out(exit_station)
+    deduct(journey.fare)
+    @history << journey
+    'Charged penalty fare for not touching in' if history.last.incomplete?
   end
 
   def top_up(amount)
@@ -41,6 +39,12 @@ class Oystercard
   end
 
   private
+
+  def penalty_charge
+    deduct(journey.fare)
+    @history << journey
+    'Charged penalty fare for not touching out'
+  end
 
   def over_max?(amount)
     @balance + amount > MAXIMUM_BALANCE

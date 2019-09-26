@@ -22,7 +22,12 @@ class Journey
 
   def fare
     return MINIMUM_FARE unless incomplete?
+
     PENALTY_FARE
+  end
+
+  def already_touched_in?
+    entry_station != nil
   end
 
   private

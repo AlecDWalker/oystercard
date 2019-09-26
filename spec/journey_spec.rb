@@ -42,6 +42,13 @@ describe Journey do
       expect(subject.fare).to eq penalty_fare
     end
   end
+
+  describe '#already_touched_in' do
+    it 'checkes if already touched in' do
+      subject.touch_in(station)
+      expect(subject.entry_station).not_to eq nil
+    end
+  end
   # when touch in
   # -record an entry station
   # - raise an error and charge penalty if already in journey
