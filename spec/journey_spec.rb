@@ -1,67 +1,55 @@
+# frozen_string_literal: true
+
 require 'journey'
 
 describe Journey do
-  let(:station) { double("Station") }
-  describe '#touch_in' do
-    context 'when not touched in' do
-      it 'returns true' do
-        expect(subject.touch_in(station)).to eq true
-      end
+  let(:station) { double('Station') }
+  let(:min_fare) { Journey::MINIMUM_FARE }
+  let(:penalty_fare) { Journey::PENALTY_FARE }
+
+  describe '#initialize' do
+    it 'initiliazes with a nil entry and exit station' do
+      expect(subject.entry_station).to eq nil
+      expect(subject.exit_station).to eq nil
     end
-      context 'when touched in' do
-      it 'raises error on double touch in' do
-        subject.touch_in(station)
-        expect(subject.in_journey?).to be true
-        expect{subject.touch_in(station)}.to raise_error 'Penalty incurred: touched in twice'
-      end
+    it 'initiliazes not in a journey' do
+      expect(subject.in_journey).to eq false
     end
   end
 
-  describe '#touch_out' do
-    context 'when touched in' do
-      it 'returns false' do
-        subject.touch_in(station)
-        expect(subject.touch_out(station)).to eq false
-      end
-    end
-    context 'when touched out' do
-      it 'raises an error when touched out twice' do
-        expect{subject.touch_out(station)}.to raise_error 'Penalty incurred: touched out twice'
-      end
+  describe '#touch in' do
+    it 'records the entry station on touch in' do
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq station
     end
   end
 
-  describe '#in_journey?' do
-    context 'when in a journey' do
-      it 'returns true' do
-        subject.touch_in(station)
-        expect(subject.in_journey?).to eq true
-      end
-    end
-    context 'when not in a journey' do
-      it 'returns false' do
-        expect(subject).to_not be_in_journey
-      end
+  describe '#touch out' do
+    it 'records the exit station on touch out' do
+      subject.touch_out(station)
+      expect(subject.exit_station).to eq station
     end
   end
 
   describe '#fare' do
-    context 'on trip completion' do
-      it 'returns the minimum fare' do
-        expect(subject.fare).to eq Journey::MINIMUM_FARE
-      end
+    it 'returns a normal fare on a standard journey' do
+      subject.touch_in(station)
+      subject.touch_out(station)
+      expect(subject.fare).to eq min_fare
     end
-
-    context 'when penalty incurred' do
-      it 'returns Penalty Fare when double touched out' do
-        subject.touch_out(station)
-        expect(subject.fare).to eq Journey::PENALTY_FARE
-      end
-      it 'returns Penalty Fare when double touched in' do
-        subject.touch_in(station)
-        subject.touch_in(station)
-        expect(subject.fare).to eq Journey::PENALTY_FARE
-      end
+    it 'returns a penalty fare if journey is incomplete' do
+      subject.touch_out(station)
+      expect(subject.fare).to eq penalty_fare
     end
   end
+  # when touch in
+  # -record an entry station
+  # - raise an error and charge penalty if already in journey
+
+  # when touch out
+  # - recrord an exit station
+  # - raise an error if touched out twice
+
+  # fare
+  # calculate a fare normal or penalty
 end

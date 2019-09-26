@@ -12,6 +12,8 @@ describe Oystercard do
     fare: Journey::MINIMUM_FARE
   }
   let(:oystercard) { described_class.new(journey: journey)}
+  let(:maximum_balance) { Oystercard::MAXIMUM_BALANCE }
+  let(:minimum_fare) { Oystercard::MINIMUM_FARE }
   it {is_expected.to respond_to :in_journey?}
 
 
@@ -64,8 +66,8 @@ describe Oystercard do
   it 'deducts the fare on touch out' do
   oystercard.top_up(5)
   oystercard.touch_in(station)
-  expect(journey).to receive(:fare) { Journey::MINIMUM_FARE }
-  expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Journey::MINIMUM_FARE)
+  expect(journey).to receive(:fare) { minimum_fare }
+  expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-minimum_fare)
   end
 end
 describe '#history' do
@@ -85,7 +87,7 @@ end
     end
 
     it 'rasises an error if balance total exceeds maximum balance' do
-      expect { oystercard.top_up(100) }.to raise_error("Exceeds £#{oystercard.maximum} maximum limit")
+      expect { oystercard.top_up(100) }.to raise_error("Exceeds £#{maximum_balance} maximum limit")
     end
   end
 end
